@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}血壓紀錄小幫手{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="bp-header">
+    <h1 class="bp-brand">🩺 血壓紀錄小幫手</h1>
+    <nav class="bp-tabs">
+        <a class="bp-tab{% if request.path == '/' %} active{% endif %}" href="{{ url_for('add_page') }}">新增紀錄</a>
+        <a class="bp-tab{% if request.path == '/history' %} active{% endif %}" href="{{ url_for('history_page') }}">歷史紀錄</a>
+        <a class="bp-tab{% if request.path == '/thresholds' %} active{% endif %}" href="{{ url_for('thresholds_page') }}">血壓標準設定</a>
+    </nav>
+</header>
+
+<main class="bp-main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="bp-flash-stack">
+        {% for category, message in messages %}
+        <div class="bp-notice bp-notice-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</main>
+</body>
+</html>

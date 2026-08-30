@@ -1,0 +1,156 @@
+/* 血壓紀錄小幫手 — 亮色系配色：#22713F（主色）＋ #FFF8F4（暖白，背景） */
+
+:root {
+    --bp-primary: #22713F;
+    --bp-primary-hover: #1B5A32;
+    --bp-bg: #FFF8F4;
+    --bp-surface: #FFFFFF;
+    --bp-text: #3A3A3A;
+    --bp-text-muted: #6B6B6B;
+    --bp-border: #F0EAE4;
+    --bp-accent-bg: #E4EFE8;
+    --bp-error: #B3261E;
+    --bp-error-bg: #FBEAE8;
+
+    /* 血壓分類套色：血壓偏高（黃）／高血壓一期（橘）／高血壓二期（紅） */
+    --bp-elevated-bg: #FDF3C7;
+    --bp-elevated-bg-hover: #FBEBA8;
+    --bp-elevated-text: #8A6D1D;
+    --bp-stage1-bg: #FCE0C2;
+    --bp-stage1-bg-hover: #FACD9E;
+    --bp-stage1-text: #9A5B14;
+    --bp-stage2-bg: #F8D3D3;
+    --bp-stage2-bg-hover: #F3B7B7;
+    --bp-stage2-text: #A32A2A;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Noto Sans TC', 'Inter', sans-serif;
+    background-color: var(--bp-bg);
+    color: var(--bp-text);
+}
+
+.bp-header {
+    background: var(--bp-surface);
+    box-shadow: 0px 2px 10px rgba(34, 113, 63, 0.10);
+    padding: 16px 24px;
+}
+.bp-brand { margin: 0 0 10px 0; font-size: 20px; color: var(--bp-primary); }
+
+.bp-tabs { display: flex; gap: 8px; }
+.bp-tab {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--bp-text-muted);
+    font-weight: 600;
+    font-size: 14px;
+}
+.bp-tab:hover { background: var(--bp-accent-bg); color: var(--bp-primary); }
+.bp-tab.active { background: var(--bp-primary); color: #FFFFFF; }
+
+.bp-main { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+.bp-section-title { font-size: 18px; font-weight: 700; margin: 0 0 16px 0; color: var(--bp-text); }
+
+/* ---- 訊息 ---- */
+.bp-flash-stack { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.bp-flash-stack .bp-notice { margin-bottom: 0; }
+.bp-notice { border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; }
+.bp-notice-success { background: var(--bp-accent-bg); color: var(--bp-primary); border: 1px solid #A9CFB8; }
+.bp-notice-error { background: var(--bp-error-bg); color: var(--bp-error); border: 1px solid #EFC2BE; }
+.bp-error-list { margin: 0; padding-left: 20px; }
+
+/* ---- 表單 ---- */
+.bp-form { background: var(--bp-surface); border-radius: 14px; padding: 20px;
+           box-shadow: 0px 4px 16px rgba(34, 113, 63, 0.08); }
+.bp-form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.bp-form-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.bp-form-row label { font-size: 13px; font-weight: 600; color: var(--bp-text); }
+.bp-form-row input {
+    padding: 10px 12px;
+    border: 1px solid #D8CFC7;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--bp-text);
+    background: var(--bp-surface);
+}
+.bp-form-row input:focus { outline: none; border-color: var(--bp-primary); }
+.bp-field-hint { font-size: 12px; color: var(--bp-text-muted); margin: 0; }
+
+.bp-btn-primary, .bp-btn-secondary, .bp-btn-danger {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 40px; padding: 0 20px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer; border: none;
+    text-decoration: none; font-family: inherit;
+}
+.bp-btn-primary { background: var(--bp-primary); color: #FFFFFF; }
+.bp-btn-primary:hover { background: var(--bp-primary-hover); }
+.bp-btn-secondary { background: var(--bp-accent-bg); color: var(--bp-primary); }
+.bp-btn-secondary:hover { background: #D3E5DA; }
+.bp-btn-danger { background: transparent; color: var(--bp-error); border: 1px solid var(--bp-error); height: 34px; padding: 0 14px; font-size: 13px; }
+.bp-btn-danger:hover { background: var(--bp-error-bg); }
+.bp-inline-form { display: inline-block; }
+
+/* ---- 查詢列 ---- */
+.bp-filter-bar { background: var(--bp-accent-bg); border-radius: 14px; padding: 16px 20px 4px 20px; margin-bottom: 20px; }
+.bp-filter-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+.bp-filter-row-4 .bp-form-row { flex: 1 1 140px; }
+.bp-filter-row .bp-form-row { flex: 1 1 160px; margin-bottom: 16px; }
+.bp-filter-actions { display: flex; gap: 10px; margin-bottom: 16px; }
+
+.bp-result-caption {
+    display: inline-block; background: var(--bp-accent-bg); color: var(--bp-primary);
+    border-radius: 999px; padding: 6px 16px; font-weight: 600; font-size: 13px; margin-bottom: 12px;
+}
+
+.bp-empty {
+    background: var(--bp-surface); border: 1px dashed #D8CFC7; border-radius: 10px;
+    padding: 24px; text-align: center; color: var(--bp-text-muted);
+}
+
+/* ---- 歷史紀錄表格 ---- */
+.bp-table-wrap { overflow-x: auto; background: var(--bp-surface); border-radius: 14px;
+                  box-shadow: 0px 4px 16px rgba(34, 113, 63, 0.08); }
+.bp-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.bp-table th, .bp-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--bp-border); }
+.bp-table th { color: var(--bp-text-muted); font-weight: 600; background: #FAF7F4; }
+.bp-table tbody tr:last-child td { border-bottom: none; }
+.bp-table tbody tr:hover { background: #FFFBF8; }
+
+/* ---- 血壓狀態套色：正常血壓底色不變，其餘三級依嚴重程度套色 ---- */
+.bp-table tbody tr.bp-row-elevated { background: var(--bp-elevated-bg); }
+.bp-table tbody tr.bp-row-elevated:hover { background: var(--bp-elevated-bg-hover); }
+.bp-table tbody tr.bp-row-stage1 { background: var(--bp-stage1-bg); }
+.bp-table tbody tr.bp-row-stage1:hover { background: var(--bp-stage1-bg-hover); }
+.bp-table tbody tr.bp-row-stage2 { background: var(--bp-stage2-bg); }
+.bp-table tbody tr.bp-row-stage2:hover { background: var(--bp-stage2-bg-hover); }
+
+.bp-badge {
+    display: inline-block; padding: 4px 12px; border-radius: 999px;
+    font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+.bp-badge-normal { background: var(--bp-accent-bg); color: var(--bp-primary); }
+.bp-badge-elevated { background: #F7DE86; color: var(--bp-elevated-text); }
+.bp-badge-stage1 { background: #F5B97C; color: var(--bp-stage1-text); }
+.bp-badge-stage2 { background: #EF9999; color: var(--bp-stage2-text); }
+
+/* ---- 血壓標準設定頁 ---- */
+.bp-thresholds-intro { max-width: 720px; margin-bottom: 16px; }
+.bp-thresholds-table-wrap { margin-bottom: 20px; }
+.bp-thresholds-table th:first-child, .bp-thresholds-table td:first-child { white-space: nowrap; }
+.bp-thresholds-table input[type="number"] {
+    width: 90px; padding: 8px 10px; border: 1px solid #D8CFC7; border-radius: 8px;
+    font-family: inherit; font-size: 14px; color: var(--bp-text); background: var(--bp-surface);
+}
+.bp-thresholds-table input[type="number"]:focus { outline: none; border-color: var(--bp-primary); }
+.bp-thresholds-actions { display: flex; gap: 10px; }
+
+@media (max-width: 640px) {
+    .bp-form-grid { grid-template-columns: 1fr; }
+}

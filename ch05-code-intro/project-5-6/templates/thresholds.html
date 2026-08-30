@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}血壓標準設定｜血壓紀錄小幫手{% endblock %}
+{% block content %}
+
+<h2 class="bp-section-title">血壓標準設定</h2>
+<p class="bp-field-hint bp-thresholds-intro">
+    設定「正常血壓」「血壓偏高」「高血壓一期」「高血壓二期」的收縮壓與舒張壓判定範圍，歷史紀錄會依照這裡的設定自動套色分類。欄位留空代表不設上限或下限。
+    「正常血壓」是其餘三項都比對不到時的預設分類，這一列數值僅供顯示參考，不會參與比對。
+</p>
+
+{% if errors %}
+<div class="bp-notice bp-notice-error">
+    <ul class="bp-error-list">
+        {% for e in errors %}
+        <li>{{ e }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<form class="bp-form" method="post" action="{{ url_for('thresholds_page') }}">
+    <div class="bp-table-wrap bp-thresholds-table-wrap">
+        <table class="bp-table bp-thresholds-table">
+            <thead>
+                <tr>
+                    <th>血壓分類</th>
+                    <th>收縮壓最小值</th>
+                    <th>收縮壓最大值</th>
+                    <th>舒張壓最小值</th>
+                    <th>舒張壓最大值</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in category_order %}
+                <tr class="bp-row-{{ category }}">
+                    <td><span class="bp-badge bp-badge-{{ category }}">{{ category_labels[category] }}</span></td>
+                    <td><input type="number" name="{{ category }}_sys_min" placeholder="不限"
+                               value="{{ field_values[category + '_sys_min'] }}"></td>
+                    <td><input type="number" name="{{ category }}_sys_max" placeholder="不限"
+                               value="{{ field_values[category + '_sys_max'] }}"></td>
+                    <td><input type="number" name="{{ category }}_dia_min" placeholder="不限"
+                               value="{{ field_values[category + '_dia_min'] }}"></td>
+                    <td><input type="number" name="{{ category }}_dia_max" placeholder="不限"
+                               value="{{ field_values[category + '_dia_max'] }}"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="bp-thresholds-actions">
+        <button type="submit" class="bp-btn-primary">儲存設定</button>
+        <button type="submit" class="bp-btn-secondary" name="action" value="reset"
+                onclick="return confirm('確定要還原為預設的血壓標準嗎？');">還原預設值</button>
+    </div>
+</form>
+
+{% endblock %}

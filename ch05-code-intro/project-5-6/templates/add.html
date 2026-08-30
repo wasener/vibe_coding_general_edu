@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}新增紀錄｜血壓紀錄小幫手{% endblock %}
+{% block content %}
+
+<h2 class="bp-section-title">新增一筆血壓紀錄</h2>
+
+{% if errors %}
+<div class="bp-notice bp-notice-error">
+    <ul class="bp-error-list">
+        {% for e in errors %}
+        <li>{{ e }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<form class="bp-form" method="post" action="{{ url_for('add_page') }}">
+    <div class="bp-form-grid">
+        <div class="bp-form-row">
+            <label for="measure_date">量測日期</label>
+            <input type="date" id="measure_date" name="measure_date" value="{{ request.form.get('measure_date', today) }}" required>
+        </div>
+        <div class="bp-form-row">
+            <label for="measure_time">量測時間</label>
+            <input type="time" id="measure_time" name="measure_time" value="{{ request.form.get('measure_time', now_time) }}" required>
+        </div>
+        <div class="bp-form-row">
+            <label for="systolic">收縮壓（mmHg）</label>
+            <input type="number" id="systolic" name="systolic" min="{{ sys_min }}" max="{{ sys_max }}"
+                   value="{{ request.form.get('systolic', 120) }}" required>
+            <p class="bp-field-hint">介於 {{ sys_min }}～{{ sys_max }} 之間。</p>
+        </div>
+        <div class="bp-form-row">
+            <label for="diastolic">舒張壓（mmHg）</label>
+            <input type="number" id="diastolic" name="diastolic" min="{{ dia_min }}" max="{{ dia_max }}"
+                   value="{{ request.form.get('diastolic', 80) }}" required>
+            <p class="bp-field-hint">介於 {{ dia_min }}～{{ dia_max }} 之間。</p>
+        </div>
+        <div class="bp-form-row">
+            <label for="pulse">脈搏（次／分）</label>
+            <input type="number" id="pulse" name="pulse" min="{{ pulse_min }}" max="{{ pulse_max }}"
+                   value="{{ request.form.get('pulse', 75) }}">
+            <p class="bp-field-hint">介於 {{ pulse_min }}～{{ pulse_max }} 之間，可留空。</p>
+        </div>
+    </div>
+
+    <div class="bp-form-row">
+        <label for="note">備註</label>
+        <input type="text" id="note" name="note" placeholder="例如：起床後量測、運動後量測" value="{{ request.form.get('note', '') }}">
+    </div>
+
+    <button type="submit" class="bp-btn-primary">新增紀錄</button>
+</form>
+
+{% endblock %}

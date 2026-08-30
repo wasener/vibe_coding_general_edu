@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}歷史紀錄｜血壓紀錄小幫手{% endblock %}
+{% block content %}
+
+<h2 class="bp-section-title">查詢與瀏覽歷史紀錄</h2>
+
+<form class="bp-filter-bar" method="get" action="{{ url_for('history_page') }}">
+    <div class="bp-filter-row">
+        <div class="bp-form-row">
+            <label for="start_date">起始日期</label>
+            <input type="date" id="start_date" name="start_date" value="{{ filters.start_date.isoformat() }}">
+        </div>
+        <div class="bp-form-row">
+            <label for="end_date">結束日期</label>
+            <input type="date" id="end_date" name="end_date" value="{{ filters.end_date.isoformat() }}">
+        </div>
+        <div class="bp-filter-actions">
+            <button type="submit" class="bp-btn-primary">套用查詢</button>
+            <a class="bp-btn-secondary" href="{{ url_for('history_page') }}">清除查詢條件</a>
+        </div>
+    </div>
+
+    <div class="bp-filter-row bp-filter-row-4">
+        <div class="bp-form-row">
+            <label for="sys_max">最高收縮壓</label>
+            <input type="number" id="sys_max" name="sys_max" min="{{ sys_min }}" max="{{ sys_max }}" value="{{ filters.sys_max }}">
+        </div>
+        <div class="bp-form-row">
+            <label for="sys_min">最低收縮壓</label>
+            <input type="number" id="sys_min" name="sys_min" min="{{ sys_min }}" max="{{ sys_max }}" value="{{ filters.sys_min }}">
+        </div>
+        <div class="bp-form-row">
+            <label for="dia_max">最高舒張壓</label>
+            <input type="number" id="dia_max" name="dia_max" min="{{ dia_min }}" max="{{ dia_max }}" value="{{ filters.dia_max }}">
+        </div>
+        <div class="bp-form-row">
+            <label for="dia_min">最低舒張壓</label>
+            <input type="number" id="dia_min" name="dia_min" min="{{ dia_min }}" max="{{ dia_max }}" value="{{ filters.dia_min }}">
+        </div>
+    </div>
+</form>
+
+{% if warning %}
+<div class="bp-notice bp-notice-error">{{ warning }}</div>
+{% else %}
+<span class="bp-result-caption">共 {{ rows|length }} 筆紀錄</span>
+
+{% if not rows %}
+<p class="bp-empty">查無符合條件的紀錄。</p>
+{% else %}
+<div class="bp-table-wrap">
+    <table class="bp-table">
+        <thead>
+            <tr>
+                <th>量測日期</th>
+                <th>量測時間</th>
+                <th>收縮壓</th>
+                <th>舒張壓</th>
+                <th>脈搏</th>
+                <th>備註</th>
+                <th>血壓狀態</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in rows %}
+            {% set r = item.record %}
+            <tr class="bp-row-{{ item.category }}">
+                <td>{{ r.measure_date }}</td>
+                <td>{{ r.measure_time }}</td>
+                <td>{{ r.systolic }}</td>
+                <td>{{ r.diastolic }}</td>
+                <td>{{ r.pulse if r.pulse is not none else "" }}</td>
+                <td>{{ r.note or "" }}</td>
+                <td><span class="bp-badge bp-badge-{{ item.category }}">{{ item.category_label }}</span></td>
+                <td>
+                    <form class="bp-inline-form" method="post" action="{{ url_for('delete_page', record_id=r.id) }}"
+                          onsubmit="return confirm('確定要刪除這筆紀錄嗎？此動作無法復原。');">
+                        <input type="hidden" name="query_string" value="{{ query_string }}">
+                        <button type="submit" class="bp-btn-danger">刪除</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endif %}
+
+{% endblock %}
