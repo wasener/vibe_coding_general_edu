@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card mb-4 border-0 shadow-sm">
+    <div class="card-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <h5 class="card-title mb-1">資料匯入</h5>
+                <p class="card-text text-muted mb-0">
+                    目前資料庫共 <strong>{{ pharmacy_count }}</strong> 筆藥局資料。
+                    {% if last_import %}
+                    最後匯入時間：{{ last_import.imported_at }}（讀取 {{ last_import.total_rows_in_file }} 筆，
+                    新增 {{ last_import.new_count }}、更新 {{ last_import.updated_count }}）。
+                    {% else %}
+                    尚未匯入任何資料，請先匯入。
+                    {% endif %}
+                </p>
+            </div>
+            <form method="post" action="{{ url_for('import_page') }}" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
+                <input type="file" name="csv_file" accept=".csv" class="form-control form-control-sm" style="max-width: 240px;">
+                <button type="submit" class="btn btn-success btn-sm text-nowrap">
+                    {% if default_file_available %}匯入／更新資料{% else %}匯入資料{% endif %}
+                </button>
+            </form>
+        </div>
+        {% if default_file_available %}
+        <p class="text-muted small mt-2 mb-0">不選檔案的話，會使用專案資料夾內隨附的「{{ default_filename }}」。</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mb-4 border-0 shadow-sm">
+    <div class="card-body">
+        <h5 class="card-title mb-3">查詢條件</h5>
+        <form method="get" action="{{ url_for('index') }}" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="name" class="form-label">藥局名稱</label>
+                <input type="text" id="name" name="name" class="form-control" value="{{ name }}" placeholder="例如：安世藥局">
+            </div>
+            <div class="col-md-3">
+                <label for="county" class="form-label">所在縣市</label>
+                <select id="county" name="county" class="form-select">
+                    <option value="">全部縣市</option>
+                    {% for code, cname in counties %}
+                    <option value="{{ code }}" {% if county_code == code %}selected{% endif %}>{{ cname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="weekday" class="form-label">看診星期</label>
+                <select id="weekday" name="weekday" class="form-select">
+                    <option value="">不限</option>
+                    {% for wd in weekdays %}
+                    <option value="{{ wd }}" {% if weekday == wd %}selected{% endif %}>{{ wd }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="time_slot" class="form-label">看診時段</label>
+                <select id="time_slot" name="time_slot" class="form-select">
+                    <option value="">不限</option>
+                    {% for slot in time_slots %}
+                    <option value="{{ slot }}" {% if time_slot == slot %}selected{% endif %}>{{ slot }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-1 d-grid">
+                <button type="submit" class="btn btn-success">查詢</button>
+            </div>
+        </form>
+        {% if weekday and not time_slot or time_slot and not weekday %}
+        <p class="text-warning small mt-2 mb-0">看診星期與看診時段請同時選擇，才能依時段篩選。</p>
+        {% endif %}
+        <a class="small" href="{{ url_for('index') }}">清除所有查詢條件</a>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <span class="badge bg-success-subtle text-success-emphasis fs-6">共找到 {{ result.total }} 筆</span>
+    <span class="text-muted small">第 {{ result.page }} / {{ result.total_pages }} 頁</span>
+</div>
+
+{% if result.rows %}
+<div class="table-responsive shadow-sm">
+    <table class="table table-striped table-hover bg-white align-middle mb-0">
+        <thead class="table-light">
+            <tr>
+                <th>醫事機構代碼</th>
+                <th>藥局名稱</th>
+                <th>電話</th>
+                <th>地址</th>
+                <th>縣市</th>
+                <th>看診時段</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in result.rows %}
+            <tr>
+                <td>{{ r.code }}</td>
+                <td>{{ r.name }}</td>
+                <td>{{ r.phone }}</td>
+                <td>{{ r.address }}</td>
+                <td>{{ r.county_name }}</td>
+                <td>
+                    {% if weekday and time_slot %}
+                    <span class="badge badge-open text-white me-1">{{ weekday }}{{ time_slot }}看診</span>
+                    {% endif %}
+                    <span class="text-muted small" style="cursor: help;" title="{{ r.clinic_hours }}">查看完整時段</span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if result.total_pages > 1 %}
+<nav class="mt-4" aria-label="分頁">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if result.page <= 1 %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('index', page=result.page - 1, **query_params) }}">上一頁</a>
+        </li>
+        {% set window_start = [1, result.page - 2] | max %}
+        {% set window_end = [result.total_pages, result.page + 2] | min %}
+        {% if window_start > 1 %}
+        <li class="page-item"><a class="page-link" href="{{ url_for('index', page=1, **query_params) }}">1</a></li>
+        {% if window_start > 2 %}<li class="page-item disabled"><span class="page-link">…</span></li>{% endif %}
+        {% endif %}
+        {% for p in range(window_start, window_end + 1) %}
+        <li class="page-item {% if p == result.page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('index', page=p, **query_params) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+        {% if window_end < result.total_pages %}
+        {% if window_end < result.total_pages - 1 %}<li class="page-item disabled"><span class="page-link">…</span></li>{% endif %}
+        <li class="page-item"><a class="page-link" href="{{ url_for('index', page=result.total_pages, **query_params) }}">{{ result.total_pages }}</a></li>
+        {% endif %}
+        <li class="page-item {% if result.page >= result.total_pages %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('index', page=result.page + 1, **query_params) }}">下一頁</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="alert alert-light border text-center text-muted">
+    {% if pharmacy_count == 0 %}
+    尚未匯入任何資料，請先在上方「資料匯入」區塊匯入資料。
+    {% else %}
+    查無符合條件的藥局，請調整查詢條件。
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}
