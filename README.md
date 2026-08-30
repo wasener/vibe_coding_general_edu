@@ -71,39 +71,85 @@ kill $(lsof -ti:8051)      # macOS / Linux
 ├── ch03-first-tool/              一句話做出健康小工具
 ├── ch04-health-search/           醫療保健與藥妝查詢網站
 ├── ch05-code-intro/              Python、HTML、JavaScript 與應用
+│   ├── 通識版_第5章_操作說明_血壓紀錄工具_python_v1.docx
+│   └── project-5-6/              範例程式專案
+│       ├── blood_pressure.db
+│       ├── pic-01-新增紀錄.png
+│       ├── pic-02-歷史紀錄.png
+│       ├── pic-03-血壓標準設定.png
+│       ├── pic-04-歷史紀錄+狀態顯示.png
+│       ├── prompt-coding.txt     專案開發所使用的 prompt 範本
+│       ├── requirements.txt      環境套件清單
+│       ├── run.py                主要執行程式
+│       ├── static/
+│       │   └── style.css
+│       └── templates/
+│           ├── add.html
+│           ├── base.html
+│           ├── history.html
+│           └── thresholds.html
 │
 ├── ch06-data-basics/             資料的基本觀念  ★ 需要 Python 環境
-│   ├── README.md
-│   ├── prompts.md                Prompt-01 起手句與 8 條細節
-│   ├── project-6-5/              藥局查詢網站
-│   │   ├── run.py                    Flask 主程式，port 8051
-│   │   ├── init_db.py                CSV 匯入 SQLite
-│   │   ├── templates/
-│   │   └── static/
-│   └── exercises.md
+│   ├── 通識版_第6章_操作說明_健保特約醫事機構-藥局_python_v1.docx
+│   └── project-6-5/              範例程式專案
+│       ├── A21030000I-D21005-001.csv
+│       ├── pharmacies.db
+│       ├── pic-01-資料匯入.png
+│       ├── pic-02-查詢.png
+│       ├── prompt-coding.txt     專案開發所使用的 prompt 範本
+│       ├── requirements.txt      環境套件清單
+│       ├── run.py                主要執行程式
+│       └── templates/
+│           ├── base.html
+│           └── index.html
 │
 ├── ch07-qa-assistant/            衛教問答小幫手  ★ 需要 Python 環境 + API 金鑰
-│   ├── README.md
-│   ├── prompts.md                起手句與五段訊息結構範本
-│   ├── project-7-2/              健康對話小幫手
-│   │   ├── run.py                    Flask 主程式，port 8051
-│   │   ├── init_db.py
-│   │   ├── templates/                對話分頁／提示編輯分頁
-│   │   └── static/
-│   └── exercises.md
+│   ├── 通識版_第7章_操作說明_LLM對話應用程式_python_v1.docx
+│   └── project-7-2/              範例程式專案
+│       ├── config.json
+│       ├── health_helper.db
+│       ├── pic-01-對話.png
+│       ├── pic-02-提示內容編輯.png
+│       ├── prompt-coding.txt     專案開發所使用的 prompt 範本
+│       ├── requirements.txt      環境套件清單
+│       ├── run.py                主要執行程式
+│       └── templates/
+│           ├── base.html
+│           ├── chat.html
+│           └── settings.html
 │
 ├── ch08-ai-ethics/               真假、隱私與倫理
 ├── ch09-final-project/           期末專題實戰
-│   ├── topic01-daily-health-log/       每日健康記錄本      入門・瀏覽器
-│   ├── topic02-medication-reminder/    用藥提醒            基礎・瀏覽器
-│   ├── topic03-ingredient-check/       保養品成分檢查      中級・瀏覽器
-│   ├── topic04-price-notebook/         藥妝比價筆記        基礎・瀏覽器
-│   ├── topic05-clinic-finder/          醫療院所查詢        中級・本機
-│   ├── topic06-vaccine-dashboard/      疫苗接種儀表板      基礎・瀏覽器
-│   ├── topic07-sunscreen-guide/        防曬衛教            基礎・瀏覽器
-│   ├── topic08-skincare-schedule/      保養排程            基礎・瀏覽器
-│   ├── topic09-health-qa-bot/          衛教問答小幫手      中級・本機
-│   └── topic10-campus-health-wiki/     校園健康小百科      基礎・瀏覽器
+│    ├── 通識版_第9章_操作說明_居家醫療備用藥箱_python_v1.docx
+│    └── project-9-3/             範例程式專案
+│       ├── A21030000I-E41001-001.csv
+│       ├── checklist-medicine-cabinet.txt
+│       ├── checklist-medicine-cabinet-after.txt
+│       ├── medicine_cabinet.db
+│       ├── pic-01-首頁-藥箱現況.png
+│       ├── pic-02-新增藥品.png
+│       ├── pic-03-查詢藥品.png
+│       ├── pic-04-匯入開放資料.png
+│       ├── prompt-coding.txt     專案開發所使用的 prompt 範本
+│       ├── requirements.txt      環境套件清單
+│       ├── run.py                主要執行程式
+│       ├── srs-medicine-cabinet.txt
+│       ├── static/
+│       │   └── css/
+│       │       └── style.css
+│       ├── stitch_medicinecabinet_home_tool/
+│       │   ├── DESIGN.md
+│       │   ├── code.html
+│       │   └── screen.png
+│       └── templates/
+│           ├── 404.html
+│           ├── about.html
+│           ├── add-edit.html
+│           ├── base.html
+│           ├── detail.html
+│           ├── import.html
+│           ├── index.html
+│           └── search.html
 │
 ├── appendix/
 │   ├── prompt-templates.md       全書起手句彙整
