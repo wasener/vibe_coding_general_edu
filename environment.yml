@@ -1,0 +1,17 @@
+# conda 環境定義
+# 建立方式：conda env create -f environment.yml
+# 啟動方式：conda activate vibecoding
+#
+# 也可以手動建立（見 SETUP.md）：
+#   conda create -n vibecoding python=3.11
+#   conda activate vibecoding
+#   pip install -r requirements.txt
+
+name: vibecoding
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - -r requirements.txt

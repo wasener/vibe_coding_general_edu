@@ -1,0 +1,22 @@
+# 《Vibe Coding：AI 生活應用通識課》第 6、7 章所需套件
+# 安裝方式：conda activate vibecoding && pip install -r requirements.txt
+
+# ── 第 6、7 章共用：Web 框架 ────────────────────────
+Flask>=3.0
+
+# ── 第 6 章：CSV 讀取與清理 ────────────────────────
+pandas>=2.2
+
+# ── 第 7 章：環境變數讀取（API 金鑰）──────────────
+python-dotenv>=1.0
+
+# ── 第 7 章：LLM API 用戶端 ────────────────────────
+# TODO：請對照第 7 章操作講義使用的 SDK 取消註解其中一行
+# 各家 SDK 名稱與版本會變動，以講義為準
+#
+# google-genai>=1.0          # Google Gemini（新版 SDK）
+# requests>=2.32             # 直接打 REST API，不裝任何 SDK
+
+# ── 註 ────────────────────────────────────────────
+# sqlite3 是 Python 內建模組，不需要安裝
+# Bootstrap 以 CDN 引入，不需要安裝
