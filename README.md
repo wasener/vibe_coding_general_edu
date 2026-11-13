@@ -394,6 +394,5 @@ SRS（`srs-medicine-cabinet.txt`）、工作清單（`checklist-medicine-cabinet
 
 ## 作者
 
-（作者姓名），（任職學校／系所）
-
-第 6、7 章由（協同作者姓名）撰寫。
+第 1、2、3、4、8 章由黃煒盛撰寫。 
+第 5、6、7、9 章由呂子墨撰寫。
