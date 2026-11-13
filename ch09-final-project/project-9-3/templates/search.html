@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}藥品查詢｜{{ app_title }}{% endblock %}
+{% block content %}
+
+<h1 class="mc-page-title">藥品查詢</h1>
+<p class="mc-subtext">查詢健保藥品開放資料，只會顯示目前有效、去重後的最新一筆資料。</p>
+
+{% if not has_reference_data %}
+<div class="mc-notice mc-notice-info">
+    目前還沒有任何健保開放資料。請先到「資料匯入」頁面匯入資料，才能在這裡查到東西。
+    <a href="{{ url_for('import_page') }}">前往資料匯入</a>
+</div>
+{% endif %}
+
+<form class="mc-filter-row" method="get" action="{{ url_for('search_page') }}">
+    <div class="mc-field mc-field-grow">
+        <label for="keyword">關鍵字（藥品名稱／成分／藥商）</label>
+        <input type="text" id="keyword" name="keyword" value="{{ keyword }}" placeholder="例如：優碘、人工淚液、乳膏…">
+    </div>
+    <button type="submit" class="mc-btn-secondary">查詢</button>
+</form>
+
+{% if keyword %}
+    {% if results %}
+    <p class="mc-subtext">共找到 {{ results|length }} 筆（僅顯示前 60 筆）。</p>
+    <div class="mc-drug-table-wrap">
+        <table class="mc-drug-table">
+            <thead>
+                <tr>
+                    <th>藥品代號</th>
+                    <th>中文名稱</th>
+                    <th>成分</th>
+                    <th>劑型</th>
+                    <th>分類</th>
+                    <th>藥商</th>
+                    <th>支付價</th>
+                    <th>有效起日</th>
+                    <th>有效迄日</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in results %}
+                <tr>
+                    <td>{{ r.drug_code }}</td>
+                    <td>{{ r.name_zh }}</td>
+                    <td>{{ r.ingredient }}</td>
+                    <td>{{ r.form }}</td>
+                    <td><span class="mc-card-category">{{ r.category_guess }}</span></td>
+                    <td>{{ r.manufacturer }}</td>
+                    <td>{{ r.payment_price_display }}</td>
+                    <td>{{ r.valid_from_display }}</td>
+                    <td>{{ r.valid_to_display }}</td>
+                    <td>
+                        <a class="mc-btn-outline mc-btn-outline-inline"
+                           href="{{ url_for('add_edit_page', prefill_code=r.drug_code) }}">加入藥箱</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="mc-empty">找不到符合「{{ keyword }}」的資料，換個關鍵字試試看。</p>
+    {% endif %}
+{% elif has_reference_data %}
+<p class="mc-empty">輸入關鍵字開始查詢。</p>
+{% endif %}
+
+{% endblock %}

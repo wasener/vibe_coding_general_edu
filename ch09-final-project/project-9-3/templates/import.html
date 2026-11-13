@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}資料匯入｜{{ app_title }}{% endblock %}
+{% block content %}
+
+<h1 class="mc-page-title">資料匯入</h1>
+<p class="mc-subtext">
+    匯入健保藥品給付項目及支付標準（衛福部健保署公開資料），供「新增藥品」「藥品查詢」使用。
+    首次使用可直接匯入隨附的檔案；日後健保署公布新版資料後，重新執行一次即可更新。
+</p>
+
+<div class="mc-notice mc-notice-info">
+    只會保留「眼藥水／內服藥水／外用藥膏」三類、且目前有效（有效迄日未過期）的最新一筆資料；
+    其餘品項不會匯入。原始檔案不會整份留在記憶體中查詢，僅用來一次性建立精簡的查詢用資料表。
+</div>
+
+<div class="mc-summary-row mc-summary-row-2">
+    <div class="mc-summary-card">
+        <div class="mc-summary-value" style="color:#00694A;">{{ last_summary.imported_at if last_summary else "尚未匯入" }}</div>
+        <div class="mc-summary-label">資料最後匯入時間</div>
+    </div>
+    <div class="mc-summary-card">
+        <div class="mc-summary-value" style="color:#00694A;">{{ last_summary.valid_rows_after_filter if last_summary else "—" }}</div>
+        <div class="mc-summary-label">目前有效藥品筆數</div>
+    </div>
+</div>
+
+{% if last_summary %}
+<div class="mc-drug-table-wrap">
+    <table class="mc-drug-table">
+        <thead>
+            <tr>
+                <th>來源檔案</th>
+                <th>原始筆數</th>
+                <th>篩選後有效筆數</th>
+                <th>新增</th>
+                <th>更新</th>
+                <th>下架</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ last_summary.source_filename }}</td>
+                <td>{{ last_summary.total_rows_in_file }}</td>
+                <td>{{ last_summary.valid_rows_after_filter }}</td>
+                <td>{{ last_summary.new_count }}</td>
+                <td>{{ last_summary.updated_count }}</td>
+                <td>{{ last_summary.deactivated_count }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<form class="mc-form" method="post" action="{{ url_for('import_page') }}" enctype="multipart/form-data">
+    <div class="mc-form-row">
+        <label for="csv_file">上傳新版開放資料 CSV（選填）</label>
+        <input type="file" id="csv_file" name="csv_file" accept=".csv">
+        <p class="mc-field-hint">
+            {% if default_file_available %}
+            不選檔案的話，會使用專案資料夾內隨附的「{{ default_filename }}」。
+            {% else %}
+            找不到隨附的預設檔案，請上傳一份健保藥品開放資料 CSV。
+            {% endif %}
+        </p>
+    </div>
+    <div class="mc-form-actions">
+        <button type="submit" class="mc-btn-primary">
+            <span class="material-symbols-outlined">upload_file</span>開始匯入
+        </button>
+    </div>
+</form>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}找不到頁面｜{{ app_title }}{% endblock %}
+{% block content %}
+
+<h1 class="mc-page-title">找不到這個頁面</h1>
+<div class="mc-notice mc-notice-info">🔍 您要找的藥品或頁面不存在，可能已經被刪除，或網址不正確。</div>
+<a class="mc-btn-outline" href="{{ url_for('index') }}">回首頁</a>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}{{ app_title }}{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header class="mc-topbar">
+    <span class="mc-brand">💊 {{ app_title }}</span>
+    <span class="mc-subtitle">{{ app_subtitle }}</span>
+</header>
+
+<main class="mc-main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mc-flash-stack">
+        {% for category, message in messages %}
+        <div class="mc-flash mc-flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</main>
+
+<nav class="mc-bottom-nav">
+    {% for href, label, icon in nav_items %}
+    <a class="mc-nav-item{% if (href == '/' and request.path == '/') or (href != '/' and request.path.startswith(href)) %} active{% endif %}" href="{{ href }}">
+        <span class="material-symbols-outlined">{{ icon }}</span>
+        <span class="mc-nav-label">{{ label }}</span>
+    </a>
+    {% endfor %}
+</nav>
+</body>
+</html>

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <span class="text-muted small">目前模型：{{ model_name }}</span>
+    <form method="post" action="{{ url_for('clear_chat') }}" onsubmit="return confirm('確定要清除全部對話紀錄嗎？此動作無法復原。');">
+        <button type="submit" class="btn btn-outline-secondary btn-sm">清除對話紀錄</button>
+    </form>
+</div>
+
+<div id="chat-content" class="border rounded-3 bg-white p-3 mb-3" style="height: 55vh; overflow-y: auto;">
+    {% if not messages %}
+    <p class="text-muted text-center mt-5">還沒有對話紀錄，在下方輸入訊息開始聊天吧。</p>
+    {% else %}
+    {% for m in messages %}
+    <div class="d-flex mb-3 {{ 'justify-content-end' if m.role == 'user' else 'justify-content-start' }}">
+        <div class="p-2 px-3 rounded-3 {{ 'bg-success-subtle' if m.role == 'user' else 'bg-light border' }}" style="max-width: 75%; white-space: pre-wrap;">
+            <div class="small text-muted mb-1">{{ '你' if m.role == 'user' else '小幫手' }}　{{ m.created_at }}</div>
+            <div>{{ m.content }}</div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+<form method="post" action="{{ url_for('chat_page') }}" id="chat-form">
+    <div class="input-group">
+        <textarea class="form-control" name="message" id="message-input" rows="2"
+                  placeholder="輸入訊息……（Enter 送出，Shift+Enter 換行）" required></textarea>
+        <button type="submit" class="btn btn-success">送出</button>
+    </div>
+</form>
+
+<script>
+    const chatContent = document.getElementById('chat-content');
+    chatContent.scrollTop = chatContent.scrollHeight;
+
+    const messageInput = document.getElementById('message-input');
+    const chatForm = document.getElementById('chat-form');
+    messageInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            if (messageInput.value.trim()) {
+                chatForm.submit();
+            }
+        }
+    });
+</script>
+
+{% endblock %}

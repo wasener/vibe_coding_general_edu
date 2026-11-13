@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+<p class="text-muted">
+    編輯小幫手每次回答時會參考的三個部分。「聊天歷史紀錄」與「本次訊息」由系統自動組成，不需要在這裡編輯；
+    對話視窗長度不夠時，系統會優先裁減聊天歷史紀錄，這三個部分永遠會完整送出。
+</p>
+
+<form method="post" action="{{ url_for('settings_page') }}">
+    {% for key, title in section_order %}
+    <div class="card mb-3 border-0 shadow-sm">
+        <div class="card-body">
+            <label for="{{ key }}" class="form-label fw-bold">{{ title }}</label>
+            <textarea class="form-control" id="{{ key }}" name="{{ key }}" rows="4">{{ sections[key].content }}</textarea>
+        </div>
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-success">儲存變更</button>
+</form>
+
+{% endblock %}

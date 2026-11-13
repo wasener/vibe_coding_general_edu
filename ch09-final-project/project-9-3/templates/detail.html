@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ med.name }}｜{{ app_title }}{% endblock %}
+{% block content %}
+
+<a class="mc-back-link" href="{{ url_for('index') }}">
+    <span class="material-symbols-outlined">arrow_back</span>回藥箱清單
+</a>
+
+<div class="mc-detail-card">
+    <div class="mc-detail-header">
+        <div>
+            <h1 class="mc-page-title">{{ med.name }}</h1>
+            <span class="mc-card-category">{{ med.category }}</span>
+        </div>
+        <span class="mc-badge mc-badge-lg" style="color:{{ med.style.color }};background:{{ med.style.bg }};">{{ med.style.label }}</span>
+    </div>
+
+    <div class="mc-detail-grid">
+        <div class="mc-detail-item">
+            <span class="mc-detail-label">開封日期</span>
+            <span class="mc-detail-value">{{ med.opened_display }}</span>
+        </div>
+        <div class="mc-detail-item">
+            <span class="mc-detail-label">開封後保存天數</span>
+            <span class="mc-detail-value">{{ med.shelf_life_days }} 天</span>
+        </div>
+        <div class="mc-detail-item">
+            <span class="mc-detail-label">開封後到期日</span>
+            <span class="mc-detail-value">{{ med.expiry_display }}</span>
+        </div>
+        <div class="mc-detail-item">
+            <span class="mc-detail-label">剩餘天數</span>
+            <span class="mc-detail-value">{{ med.remaining_display }}</span>
+        </div>
+    </div>
+
+    {% if med.note %}
+    <div class="mc-detail-note">
+        <span class="mc-detail-label">備註</span>
+        <p>{{ med.note }}</p>
+    </div>
+    {% endif %}
+
+    <div class="mc-form-actions">
+        <a class="mc-btn-primary" href="{{ url_for('edit_medicine_page', med_id=med.id) }}">
+            <span class="material-symbols-outlined">edit</span>編輯
+        </a>
+        <form class="mc-inline-form" method="post" action="{{ url_for('delete_medicine_page', med_id=med.id) }}"
+              onsubmit="return confirm('確定要刪除「{{ med.name }}」嗎？此動作無法復原。');">
+            <button type="submit" class="mc-btn-danger">刪除</button>
+        </form>
+    </div>
+</div>
+
+<div class="mc-disposal-box {{ 'mc-disposal-box-alert' if med.status == 'red' else '' }}">
+    <h2 class="mc-section-title">
+        {% if med.status == "red" %}
+        <span class="material-symbols-outlined">warning</span>這罐已過期，廢棄處理指引
+        {% else %}
+        廢棄處理指引（供未來需要丟棄時參考）
+        {% endif %}
+    </h2>
+    <p>{{ guide_text or "目前沒有這個分類的廢棄處理指引。" }}</p>
+    <p class="mc-field-hint">{{ disclaimer_text }}</p>
+</div>
+
+{% endblock %}

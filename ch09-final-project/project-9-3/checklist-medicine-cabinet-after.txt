@@ -1,0 +1,48 @@
+工作清單（Checklist）
+居家醫療備用藥箱「過期與保存檢核器」
+依據：chapter-09/project-9-3/srs-medicine-cabinet.txt（修訂版）§ 9 使用者介面需求
+
+狀態圖例：[X] 開發完成　[ ] 尚未開發
+
+狀態  頁面名稱          網頁檔名        開發備註
+------------------------------------------------
+[X]   首頁／藥箱清單    index.html      已完成（templates/index.html＋run.py index()）。實作 FR-2 到期日／剩餘天數計算、FR-3 綠/黃/紅/灰顏色警示、FR-4 分類/狀態/關鍵字三種篩選（GET 查詢字串，可合併使用）、§10 固定免責聲明與資料來源列（含「資料最後匯入時間」，尚未匯入時顯示提示文字）。首次啟動會寫入 6 筆示範藥品（涵蓋四種狀態），供 FR-1 頁面尚未開發前先行檢視效果。已用 Playwright 截圖驗證版面、篩選互動與無主控台錯誤。
+[X]   新增／編輯藥品    add-edit.html   已完成（templates/add-edit.html＋run.py add_edit_page()／edit_medicine_page()）。實作 FR-1 新增／編輯／刪除（同一張表單依 /add-edit 或 /add-edit/<id> 判斷模式）、6-1 分類切換時以 JS 自動帶入預設保存天數（不覆寫已手動輸入的值）、伺服器端與瀏覽器端雙重驗證。FR-6：頁面內建關鍵字搜尋框查詢 drug_reference，「帶入」會用 JS 把名稱／分類／代號寫回表單欄位。
+[X]   藥品詳情          detail.html     已完成（templates/detail.html＋run.py detail_page()）。顯示 FR-2 到期日／剩餘天數、FR-3 顏色狀態徽章、備註；FR-5／6-3 廢棄處理指引固定顯示，狀態為「已過期」時額外套用紅色警示樣式與提示文字。提供「編輯」「刪除」（刪除有 JS confirm 二次確認）。找不到藥品時回傳 404（templates/404.html）。
+[X]   藥品查詢          search.html     已完成（templates/search.html＋run.py search_page()）。用名稱／成分／藥商關鍵字查詢 drug_reference（共用 query_drug_reference()，只查 status='正常'，即 4-4 篩選去重後的資料），結果表格顯示藥品代號、中文名稱、成分、劑型、分類、藥商、支付價、有效起訖日，並提供「加入藥箱」直接帶到 add-edit.html。drug_reference 尚無資料時提示先做資料匯入。
+[X]   資料匯入          import.html     已完成（templates/import.html＋run.py import_page()／run_csv_import()）。可上傳新版 CSV，或不選檔案時使用隨附的 A21030000I-E41001-001.csv；依 4-3 分類關鍵字篩選＋4-4 有效性（有效迄日≧今天或＝9991231）與去重（同代號取有效起日最新）＋4-5 新增／更新／下架寫入 drug_reference，並寫入 import_logs、畫面顯示摘要與「資料最後匯入時間」。實測 22 萬列原始檔案處理時間約 1 秒，單一同步請求即可完成，不需背景工作或進度條。
+[X]   關於／資料來源說明 about.html      已完成（templates/about.html＋run.py about_page()）。整合 §10 完整免責聲明（含查詢頁支付價／效期的但書）、§8 資料來源說明與最後匯入時間、6-3 廢棄處理指引一覽表、§11 範圍外事項。
+
+備註：
+・本次更新新增「藥品查詢」（search.html）與「資料匯入」（import.html）兩個頁面，對應 SRS 修訂版新增的 FR-7、FR-8。
+・新增與編輯共用同一張表單頁（add-edit.html），依是否帶入既有藥品 id 判斷為新增或編輯模式，避免重複開發兩個相似頁面。
+・FR-6（add-edit.html 內的搜尋帶入）與 FR-7（search.html 獨立查詢頁）共用同一套查詢邏輯（4-4 有效性與去重規則），開發時建議寫成共用函式，避免兩處邏輯不一致。
+・import.html 為資料維運頁面，一般家庭使用情境下多半只有首次使用與健保署公布新版資料時才會用到，UI 設計時可考慮與 about.html 放在同一個「設定／資料管理」入口，降低一般使用者的操作干擾。
+・about.html 為 SRS §9 中的可選畫面，但因需固定揭露資料來源、免責聲明與資料最後匯入時間（§10），v1 仍規劃為必要頁面。
+・本清單僅列出頁面層級的開發項目；各頁面內部的表單驗證、資料庫存取（medicines／drug_reference／disposal_guides／import_logs）與第 4-3～4-5 節的匯入處理邏輯，開發時請對照 SRS 逐一確認後再將狀態改為 [X]。
+
+開發紀錄：
+
+2026-08-21　技術路線改為 Flask（原 Streamlit 版本已移除，重新開發）
+・原因：Streamlit 版本的介面客製化效果不理想，改用 Flask＋Jinja2 樣板＋純 HTML/CSS，讓「網頁檔名」這欄可以對應到真正的樣板檔案，也讓 stitch 樣板的視覺效果能更完整還原（尤其是 Material Symbols 圖示，在 Streamlit 版本受限於元件限制無法正確顯示，Flask 版本已可正確呈現）。
+・專案結構：chapter-09/project-9-3/run.py（Flask app 與路由／資料庫邏輯）、templates/base.html（共用版面：頂部品牌列＋底部導覽列）、templates/index.html（首頁內容，extends base）、templates/placeholder.html（尚未開發頁面共用樣板）、static/css/style.css（配色與字型取自 stitch_medicinecabinet_home_tool/code.html）。
+・路由對應：index() → "/"；其餘 checklist 頁面先各自建立路由（/add-edit、/detail/<med_id>、/search、/import、/about）並回傳 placeholder.html，避免底部導覽連到 404。
+
+2026-08-21　開發 index.html（首頁／藥箱清單）
+・實作 FR-2 到期日／剩餘天數計算、FR-3 綠/黃/紅/灰顏色警示、FR-4 分類/狀態/關鍵字三種篩選。篩選改用標準 GET 表單（下拉選單 onchange 自動送出、關鍵字搭配「套用篩選」按鈕），篩選狀態保留在網址查詢字串中，符合一般網站慣例，也比 Streamlit 版本單純。
+・§10 固定顯示免責聲明與資料來源列，含「資料最後匯入時間」（尚未匯入時顯示提示文字）。
+・沿用 Streamlit 版本的設計決策：底部導覽列固定於畫面下方、桌機與手機皆顯示同一套（不做手機底部／桌機頂部的兩套選單），對應 Prompt-03 對 stitch 提出的「選單請放置在頁面的下方，並且鎖定在螢幕的下方」需求。
+・資料庫：init_db() 建立 SRS 第 7 節四張表（medicines、drug_reference、disposal_guides、import_logs），disposal_guides 已依 6-3 內容寫入種子資料。medicines 首次啟動會寫入 6 筆示範資料（標註「示範資料」字樣），涵蓋安全／即將到期／已過期／尚未設定四種狀態，方便在 add-edit.html 開發完成前就能檢視 FR-2／FR-3／FR-4 的實際效果；之後 FR-1 頁面完成、使用者開始新增真實資料後，這批示範資料可再另外提供刪除方式清除。
+・已驗證：以 Playwright（headless Chromium）啟動 run.py（port 8051）並截圖確認版面、分類下拉篩選、關鍵字搜尋＋送出按鈕皆正確運作、統計卡片數字與 6-2 顏色規則一致、底部導覽在各頁面間切換正常（含網址列真的換成對應路由）、「查看詳情」連結正確帶出該筆藥品 id、瀏覽器主控台無錯誤訊息。
+・下一輪建議：依序開發 add-edit.html（FR-1／FR-6，含開封後保存天數依 6-1 分類自動帶入的邏輯），之後才有真實資料可供 detail.html／search.html 使用；import.html 因牽涉 96MB 原始 CSV 的批次處理，建議安排在資料量與效能已可控時再進行。
+
+2026-08-21　一次補完剩餘五頁：add-edit.html、detail.html、search.html、import.html、about.html
+・run.py 新增：CRUD 共用函式（fetch_medicine／insert_medicine／update_medicine／delete_medicine）、表單驗證共用函式 _parse_medicine_form()（同時給新增與編輯路由用，避免邏輯分岔）、FR-6／FR-7 共用的 query_drug_reference()、CSV 匯入三段邏輯 classify_form()／roc_to_iso()／is_currently_valid()／run_csv_import()。刪除了 templates/placeholder.html 與 PLACEHOLDER_INFO（不再需要）。
+・4-3 分類判斷實際跑過全部 224,553 列原始資料驗證：眼藥水／外用藥膏／內服藥水判斷順序依 SRS 4-3 條列順序（眼藥水優先，避免「點眼液劑」被誤判成內服藥水；外用藥膏優先於內服藥水，讓「外用液劑」這類外用消毒藥水正確歸類，不會被「液劑」關鍵字誤導成內服藥水）。
+・4-4 有效性判斷：CSV 的「有效起日／迄日」是民國年 YYYMMDD（7 碼），寫了 roc_to_iso() 轉西元日期再與今天比較；「9991231」是「目前仍生效、無結束日期」的特殊值，需先判斷這個值再走一般轉換，兩者判斷順序寫反會導致全部資料被誤判為已失效，開發時已用實際資料驗證過。
+・4-5 新增／更新／下架：以「新篩選出的代號集合」對「資料庫現有 status='正常' 的代號集合」做集合運算（差集／交集）算出三個計數，找不到對應資料的舊代號標記 status='已停用' 而非刪除，避免使用者既有藥箱紀錄（medicines.drug_ref_code）關聯的藥品名稱消失。
+・FR-6（add-edit.html 內建搜尋帶入）：頁面內用 GET ?q= 查同一份 query_drug_reference()，點「帶入」會重新整理頁面帶上 ?prefill_code=，再用一小段 JS 把 name／category／drug_ref_code 欄位填回表單、並在使用者尚未手動輸入保存天數時依 6-1 帶入預設值；換分類時的保存天數自動帶入也是同一段 JS 邏輯（用「使用者是否手動輸入過」的旗標避免編輯既有資料時被意外覆寫）。
+・效能：實測完整匯入（讀取 96 MB／224,553 列、分類篩選、有效性判斷、去重、寫入 SQLite）在一般筆電上約 1 秒完成，因此 FR-8 採單一同步 POST 請求處理，沒有做背景工作佇列或前端進度條，複雜度與效果的取捨在此案例下是合理的。
+・已用 Playwright 走過完整流程並截圖：匯入 → 查詢（搜尋「優碘」查到健保開放資料的外用消毒藥水）→ 從查詢結果「加入藥箱」帶入新增表單並存檔 → 手動新增一筆（驗證分類切換自動帶入保存天數、驗證錯誤訊息，含刻意送出空表單觸發瀏覽器端與伺服器端雙重驗證）→ 開封日期設在很久以前確認「已過期」紅色警示與紅色廢棄指引框正確顯示 → 編輯備註 → 刪除 → 確認首頁與關於頁的統計數字、資料最後匯入時間同步更新 → 訪問不存在的藥品編號確認 404 頁面正常顯示。全程瀏覽器主控台無錯誤。
+・已知簡化（教學示範專案的合理取捨，非遺漏）：secret_key 為寫死的開發用字串，僅供 flash() 訊息使用，不做為正式部署的安全機制；表單未加 CSRF token，因應用僅供單機本地使用，沒有跨站攻擊的實際風險；CSV 上傳僅檢查必要欄位是否存在，不做逐列的資料型別驗證。
+・目前 checklist 六個頁面皆已完成，下一步可考慮：把 6 筆示範藥品資料的清除／保留交由使用者決定（目前只能逐筆手動刪除）、或針對 add-edit.html 內建搜尋加上更即時的互動（目前是整頁重新整理，非 AJAX）。

@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}{{ "編輯藥品" if med else "新增藥品" }}｜{{ app_title }}{% endblock %}
+{% block content %}
+
+<h1 class="mc-page-title">{{ "編輯藥品" if med else "新增藥品" }}</h1>
+<p class="mc-subtext">
+    {% if med %}
+    修改「{{ med.name }}」的紀錄。
+    {% else %}
+    填寫下列欄位，記錄一項家中的常備藥。
+    {% endif %}
+</p>
+
+{% if errors %}
+<div class="mc-notice mc-notice-error">
+    <strong>請修正以下問題：</strong>
+    <ul class="mc-error-list">
+        {% for e in errors %}
+        <li>{{ e }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% set v = form_values or med %}
+
+<form class="mc-form" method="post" action="{{ url_for('edit_medicine_page', med_id=med.id) if med else url_for('add_edit_page') }}">
+    <div class="mc-form-row">
+        <label for="name">藥品名稱</label>
+        <input type="text" id="name" name="name" required
+               value="{{ v.name if v else '' }}" placeholder="例如：普拿疼糖漿">
+    </div>
+
+    <div class="mc-form-row">
+        <label for="category">分類</label>
+        <select id="category" name="category" required>
+            <option value="" {% if not v or not v.category %}selected{% endif %} disabled>請選擇分類</option>
+            {% for c in categories %}
+            <option value="{{ c }}" {% if v and v.category == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mc-form-row">
+        <label for="opened_date">開封日期</label>
+        <input type="date" id="opened_date" name="opened_date"
+               value="{{ (v.opened_date if v else today_iso) or '' }}">
+        <p class="mc-field-hint">尚未拆封或不確定，可以留空——清單會標示「尚未設定」。</p>
+    </div>
+
+    <div class="mc-form-row">
+        <label for="shelf_life_days">開封後保存天數</label>
+        <input type="number" id="shelf_life_days" name="shelf_life_days" min="1" required
+               value="{{ v.shelf_life_days if v and v.shelf_life_days else '' }}"
+               placeholder="選擇分類後會自動帶入參考值">
+        <p class="mc-field-hint">依 6-1 節分類預設值自動帶入，一般參考經驗值，請自行覆寫或以藥品標示為準。</p>
+    </div>
+
+    <div class="mc-form-row">
+        <label for="note">備註（選填）</label>
+        <textarea id="note" name="note" rows="3" placeholder="例如：小孩發燒備用">{{ v.note if v else '' }}</textarea>
+    </div>
+
+    <input type="hidden" id="drug_ref_code" name="drug_ref_code" value="{{ v.drug_ref_code if v else '' }}">
+    {% if v and v.drug_ref_code %}
+    <p class="mc-field-hint">已連結健保藥品開放資料代號：{{ v.drug_ref_code }}</p>
+    {% endif %}
+
+    <div class="mc-form-actions">
+        <button type="submit" class="mc-btn-primary">{{ "儲存變更" if med else "新增藥品" }}</button>
+        <a class="mc-btn-secondary" href="{{ url_for('detail_page', med_id=med.id) if med else url_for('index') }}">取消</a>
+    </div>
+</form>
+
+{% if med %}
+<form class="mc-inline-form" method="post" action="{{ url_for('delete_medicine_page', med_id=med.id) }}"
+      onsubmit="return confirm('確定要刪除「{{ med.name }}」嗎？此動作無法復原。');">
+    <button type="submit" class="mc-btn-danger">刪除這筆藥品</button>
+</form>
+{% endif %}
+
+<section class="mc-search-embed">
+    <h2 class="mc-section-title">找不到想要的藥品名稱？從健保開放資料搜尋帶入</h2>
+    <form class="mc-filter-row" method="get" action="{{ url_for('edit_medicine_page', med_id=med.id) if med else url_for('add_edit_page') }}">
+        <div class="mc-field mc-field-grow">
+            <label for="q">關鍵字（藥品名稱／成分／藥商）</label>
+            <input type="text" id="q" name="q" value="{{ search_keyword }}" placeholder="例如：優碘、人工淚液…">
+        </div>
+        <button type="submit" class="mc-btn-secondary">搜尋</button>
+    </form>
+
+    {% if prefill %}
+    <div class="mc-notice mc-notice-info">
+        已帶入健保開放資料：<strong>{{ prefill.name_zh }}</strong>（{{ prefill.category_guess }}），可依此調整開封日期與保存天數後儲存。
+    </div>
+    <script>
+        document.getElementById('name').value = {{ prefill.name_zh | tojson }};
+        document.getElementById('category').value = {{ prefill.category_guess | tojson }};
+        document.getElementById('drug_ref_code').value = {{ prefill.drug_code | tojson }};
+        if (!document.getElementById('shelf_life_days').value) {
+            const defaults = {{ default_shelf_life_days | tojson }};
+            document.getElementById('shelf_life_days').value = defaults[{{ prefill.category_guess | tojson }}] || 90;
+        }
+    </script>
+    {% endif %}
+
+    {% if search_keyword %}
+        {% if search_results %}
+        <div class="mc-search-results">
+            {% for r in search_results %}
+            <div class="mc-search-result-row">
+                <div>
+                    <div class="mc-search-result-name">{{ r.name_zh }}</div>
+                    <div class="mc-search-result-meta">{{ r.category_guess }}　{{ r.manufacturer }}</div>
+                </div>
+                <a class="mc-btn-outline mc-btn-outline-inline"
+                   href="{{ url_for('edit_medicine_page', med_id=med.id, prefill_code=r.drug_code) if med else url_for('add_edit_page', prefill_code=r.drug_code) }}">帶入</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="mc-empty">找不到符合「{{ search_keyword }}」的健保開放資料，可能尚未匯入資料，或請換個關鍵字。可以到「資料匯入」頁面先匯入資料。</p>
+        {% endif %}
+    {% endif %}
+</section>
+
+<script>
+    (function () {
+        const categorySelect = document.getElementById('category');
+        const shelfInput = document.getElementById('shelf_life_days');
+        const defaults = {{ default_shelf_life_days | tojson }};
+        let shelfTouched = {{ 'true' if med else 'false' }};
+        shelfInput.addEventListener('input', function () { shelfTouched = true; });
+        categorySelect.addEventListener('change', function () {
+            if (!shelfTouched) {
+                shelfInput.value = defaults[categorySelect.value] || 90;
+            }
+        });
+    })();
+</script>
+
+{% endblock %}

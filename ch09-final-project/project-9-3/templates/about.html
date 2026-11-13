@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}關於｜{{ app_title }}{% endblock %}
+{% block content %}
+
+<h1 class="mc-page-title">關於本工具</h1>
+<p class="mc-subtext">
+    {{ app_subtitle }}——記錄家中的常備藥，依「開封後有效期限」（而不是包裝上的效期）
+    自動計算到期狀態，並在需要時提供一般性的廢棄處理指引。
+</p>
+
+<section class="mc-about-section">
+    <h2 class="mc-section-title">免責聲明</h2>
+    <div class="mc-notice">
+        <strong>{{ disclaimer_text }}</strong>
+    </div>
+    <ul class="mc-about-list">
+        <li>本工具不做診斷、不提供醫療建議，僅協助管理居家藥品的開封與保存狀態。</li>
+        <li>「開封後保存天數」為一般參考經驗值，非醫療標準或法規規定，實際保存期限請以藥品包裝標示、說明書或藥師意見為準。</li>
+        <li>廢棄處理指引為一般性原則，非官方法規文件，實際處理方式請依當地環保機關或社區藥局公告為準。</li>
+        <li>藥品查詢頁顯示的支付價、有效起訖日等資訊僅為健保開放資料的原始內容，非藥品保存期限，亦非鼓勵依支付價選購藥品。</li>
+    </ul>
+</section>
+
+<section class="mc-about-section">
+    <h2 class="mc-section-title">資料來源</h2>
+    <p>{{ data_source_text }}</p>
+    <p class="mc-subtext">資料最後匯入時間：{{ last_import or "尚未匯入（請至「資料匯入」頁面匯入健保開放資料）" }}</p>
+</section>
+
+<section class="mc-about-section">
+    <h2 class="mc-section-title">廢棄處理指引一覽</h2>
+    <div class="mc-drug-table-wrap">
+        <table class="mc-drug-table">
+            <thead><tr><th>分類</th><th>指引內容</th></tr></thead>
+            <tbody>
+                {% for category, guide in disposal_guides.items() %}
+                <tr><td>{{ category }}</td><td>{{ guide }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="mc-about-section">
+    <h2 class="mc-section-title">本版本範圍外（尚未支援）</h2>
+    <ul class="mc-about-list">
+        <li>不做藥物交互作用、成分禁忌檢查。</li>
+        <li>不做拍照辨識藥品或掃描條碼建檔。</li>
+        <li>不做推播通知或行事曆提醒。</li>
+        <li>不支援多使用者帳號或雲端資料同步，僅供單機／單一家庭使用。</li>
+        <li>藥品查詢僅涵蓋眼藥水、內服藥水、外用藥膏三類，不含錠劑、注射劑等其他劑型。</li>
+        <li>不會自動連線健保署開放資料平台偵測或下載新版檔案，需自行下載後於「資料匯入」頁面手動匯入。</li>
+    </ul>
+</section>
+
+{% endblock %}

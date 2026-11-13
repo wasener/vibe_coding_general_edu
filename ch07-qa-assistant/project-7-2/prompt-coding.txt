@@ -1,0 +1,46 @@
+
+請幫我使用python程式(flask)開發一個 LLM對話應用程式．
+所需要的功能如下：
+(1) 呈現方式，banner(生活保健小幫手)/content(chat history)/input box (輸入視窗＋送出按鈕/Shift+Enter).
+(2) 建立一個 config.json 檔案來設定程式各項參數. LLM detail info - LLM, model, api-key,content length,..., 請以 gemini LLM 做為預設的設定．
+(3) LLM message 請幫我拆分成 "角色定義"、"知識庫”、“規範”、"本次訊息"、"聊天歷史紀錄" 這幾個部分. "聊天歷史紀錄" 為最低優先權，對話視窗長度不夠時，優先裁減歷史紀錄.
+(4) 畫面中新增一個 tab 用來編輯項目(3)的內容．
+(5) 使用 sqlite3 資料庫模組. 用來儲存對話紀錄, 項目(3)需要儲存的資訊.
+(6) 使用亮色系風格畫面, 亮底深色文字, 並且使用 bootstrap 資源.
+(7) 輸出程式 project-7-2/run.py, 使用端口 port 8051
+(8) 建立 requirements.txt 檔案.
+
+執行程式：
+   cd chapter-07/project-7-2
+   conda activate health-app
+   pip install -r requirements.txt
+   python run.py
+   開啟瀏覽器： http://127.0.0.1:8051
+
+結束程式：
+  關閉方式：Ctrl + C 
+  如果服務執行時出現 port 8051 筆被佔用，可以刪除佔用的程序 : $ kill $(lsof -ti:8051)
+
+說明：
+  現在的 prompt 在描述上會更精確，產出的程式也會越接近你所定義的樣貌．
+  開啟方式：在專案資料夾中執行 $ streamlit run run.py  
+
+進階：
+  (1) 你可以在上面的基礎，再加上新的定義，來看看程式的輸出結果.
+  (2) 可以修改設定，使用不同的大語言模型．
+  (3) 添加支援”圖片“上傳的功能.
+
+備註：此次專案使用 CODEX 進行 vibe-coding.
+
+
+Lession Learn :
+
+問題：我們在詢問小幫手後，內容出現在對話區域的下方，並沒有如我們所希望的出現在區域內，這時候我們請 AI 幫我們修改.
+
+給 AI 修正的 Prompt : 
+"對話內容沒有顯示在 對話文字區域內 請進行修正"
+
+結果：文字已經可以正常的出現在對話區域內了.
+
+
+

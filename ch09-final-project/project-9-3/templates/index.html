@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}首頁｜{{ app_title }}{% endblock %}
+{% block content %}
+
+<div class="mc-notice">
+    <strong>{{ disclaimer_text }}</strong><br>
+    {{ data_source_text }}　資料最後匯入時間：{{ last_import or "尚未匯入（請至「資料匯入」頁面匯入健保開放資料）" }}
+</div>
+
+<div class="mc-header-row">
+    <div>
+        <h1 class="mc-page-title">目前藥箱概況</h1>
+        <p class="mc-subtext">記錄家中的常備藥，依開封後有效期限自動計算到期狀態。</p>
+    </div>
+    <a class="mc-btn-primary" href="{{ url_for('add_edit_page') }}">
+        <span class="material-symbols-outlined">add</span>新增藥品
+    </a>
+</div>
+
+<form class="mc-filter-row" method="get" action="{{ url_for('index') }}">
+    <div class="mc-field">
+        <label for="category">分類</label>
+        <select name="category" id="category" onchange="this.form.submit()">
+            <option value="全部" {% if category == "全部" %}selected{% endif %}>全部</option>
+            {% for c in categories %}
+            <option value="{{ c }}" {% if category == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mc-field">
+        <label for="status">狀態</label>
+        <select name="status" id="status" onchange="this.form.submit()">
+            <option value="全部" {% if status == "全部" %}selected{% endif %}>全部</option>
+            {% for s in statuses %}
+            <option value="{{ s }}" {% if status == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mc-field mc-field-grow">
+        <label for="keyword">關鍵字搜尋（藥品名稱）</label>
+        <input type="text" name="keyword" id="keyword" value="{{ keyword }}" placeholder="例如：眼藥水、糖漿…">
+    </div>
+    <button type="submit" class="mc-btn-secondary">套用篩選</button>
+</form>
+
+<div class="mc-summary-row">
+    {% for label, value, color in summary %}
+    <div class="mc-summary-card">
+        <div class="mc-summary-value" style="color:{{ color }};">{{ value }}</div>
+        <div class="mc-summary-label">{{ label }}</div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if medicines %}
+<div class="mc-card-grid">
+    {% for med in medicines %}
+    <div class="mc-card">
+        <div class="mc-card-title">{{ med.name }}</div>
+        <span class="mc-card-category">{{ med.category }}</span>
+        <div class="mc-card-body">
+            <div class="mc-card-row"><span>開封日期</span><span>{{ med.opened_display }}</span></div>
+            <div class="mc-card-row"><span>開封後到期日</span><span>{{ med.expiry_display }}</span></div>
+            <div class="mc-card-row"><span>剩餘天數</span><span>{{ med.remaining_display }}</span></div>
+        </div>
+        <span class="mc-badge" style="color:{{ med.style.color }};background:{{ med.style.bg }};">{{ med.style.label }}</span>
+        <a class="mc-btn-outline" href="{{ url_for('detail_page', med_id=med.id) }}">查看詳情</a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="mc-empty">目前藥箱裡沒有符合條件的藥品。可以調整篩選條件，或新增一筆藥品試試看。</p>
+{% endif %}
+
+{% endblock %}
